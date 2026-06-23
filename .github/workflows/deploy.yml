@@ -41,8 +41,8 @@ jobs:
           kubectl delete deployment frontend-app --ignore-not-found=true
           kubectl delete deployment frontend-nuevo --ignore-not-found=true
           kubectl delete deployment frontend --ignore-not-found=true
-          
+          kubectl describe service frontend-service
           # 🚀 2. APLICAR EL DESPLIEGUE LIMPIO
           kubectl apply -f k8s/deployment.yml
 
-          kubectl describe service frontend-service
+
