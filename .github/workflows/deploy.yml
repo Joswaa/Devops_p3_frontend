@@ -32,6 +32,12 @@ jobs:
         run: |
           docker push ${{ secrets.ECR_REPO_FRONTEND }}:latest
 
-      - name: Update deployment
+      - name: Update kubeconfig
         run: |
-          # TODO: agregar comando real de despliegue a EKS/EC2
+          # Esto conecta GitHub Actions con tu clúster EKS en AWS
+          aws eks update-kubeconfig --name cluster-arquitectura-microservicios --region ${{ secrets.AWS_REGION }}
+
+      - name: Deploy to EKS
+        run: |
+          # Esto lee tu archivo de configuración y crea el Frontend en el clúster
+          kubectl apply -f k8s/deployment.yml
