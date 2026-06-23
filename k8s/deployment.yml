@@ -1,7 +1,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: frontend
+  name: frontend # Cambiado a 'frontend'
   namespace: default
 spec:
   replicas: 1
@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
       - name: frontend
-        # Usamos la URI de tu ECR apuntando al contenedor del frontend
+        # Verifica que esta ruta apunte exactamente al 'frontend' de tu ECR
         image: 921558516087.dkr.ecr.us-east-1.amazonaws.com/frontend:latest
         ports:
         - containerPort: 80
@@ -27,7 +27,7 @@ metadata:
   name: frontend-service
   namespace: default
 spec:
-  type: LoadBalancer # AWS EKS nos dará una URL pública aquí
+  type: LoadBalancer
   selector:
     app: frontend
   ports:
