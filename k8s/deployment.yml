@@ -1,21 +1,21 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: frontend-nuevo  # 👈 Cambiamos el nombre para forzar un recurso limpio
+  name: frontend  # 👈 Nos quedamos con este único nombre oficial
   namespace: default
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: frontend-nuevo
+      app: frontend
   template:
     metadata:
       labels:
-        app: frontend-nuevo
+        app: frontend
     spec:
       containers:
       - name: frontend
-        # Confirmamos que apunte a tu repositorio 'frontend' en ECR
+        # Asegúrate de que apunte a tu repositorio real en ECR
         image: 921558516087.dkr.ecr.us-east-1.amazonaws.com/frontend:latest
         ports:
         - containerPort: 80
@@ -29,7 +29,7 @@ metadata:
 spec:
   type: LoadBalancer
   selector:
-    app: frontend-nuevo
+    app: frontend
   ports:
     - protocol: TCP
       port: 80
