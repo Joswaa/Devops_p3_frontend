@@ -44,3 +44,5 @@ jobs:
           
           # 🚀 2. APLICAR EL DESPLIEGUE LIMPIO
           kubectl apply -f k8s/deployment.yml
+
+          kubectl describe service frontend-service
