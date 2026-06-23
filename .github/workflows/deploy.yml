@@ -35,11 +35,12 @@ jobs:
 
       - name: Update Kubeconfig and Deploy to EKS
         run: |
-          # Clonado exacto de tu backend exitoso
           aws eks update-kubeconfig --region us-east-1 --name eks-proyect-innovatech
           
-          # Aplica el cambio definitivo
-          kubectl apply -f k8s/deployment.yml
+          # 🔥 PASO DE LIMPIEZA: Esto borra los pods viejos con errores
+          kubectl delete pods -l app=frontend-app --field-selector=status.phase!=Running
+          kubectl delete pods -l app=frontend --field-selector=status.phase!=Running
           
-          # Fuerza la actualización obligatoria del Pod en el clúster
+          # Tu despliegue normal (no tocar)
+          kubectl apply -f k8s/deployment.yml
           kubectl rollout restart deployment/frontend-app
