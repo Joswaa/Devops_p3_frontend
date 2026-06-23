@@ -37,10 +37,10 @@ jobs:
         run: |
           aws eks update-kubeconfig --region us-east-1 --name eks-proyect-innovatech
           
-          # 🔥 PASO DE LIMPIEZA: Esto borra los pods viejos con errores
-          kubectl delete pods -l app=frontend-app --field-selector=status.phase!=Running
-          kubectl delete pods -l app=frontend --field-selector=status.phase!=Running
+          # 💥 1. BORRAR DE RAÍZ los 3 deployments que se crearon por error
+          kubectl delete deployment frontend-app --ignore-not-found=true
+          kubectl delete deployment frontend-nuevo --ignore-not-found=true
+          kubectl delete deployment frontend --ignore-not-found=true
           
-          # Tu despliegue normal (no tocar)
+          # 🚀 2. APLICAR EL DESPLIEGUE LIMPIO
           kubectl apply -f k8s/deployment.yml
-          kubectl rollout restart deployment/frontend-app
