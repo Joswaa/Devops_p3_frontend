@@ -29,7 +29,7 @@ metadata:
 spec:
   type: LoadBalancer # AWS EKS nos dará una URL pública aquí
   selector:
-    app: frontend-app
+    app: frontend
   ports:
     - protocol: TCP
       port: 80
