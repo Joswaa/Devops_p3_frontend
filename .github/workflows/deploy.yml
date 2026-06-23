@@ -22,17 +22,19 @@ jobs:
           aws-region: ${{ secrets.AWS_REGION }}
 
       - name: Login to Amazon ECR
+        id: login-ecr  # 👈 Es fundamental agregar este ID aquí
         uses: aws-actions/amazon-ecr-login@v2
 
       - name: Build Docker image
         run: |
           docker build -t ${{ secrets.ECR_REPO_FRONTEND }}:latest .
 
+      - name: Build Docker image
+        run: |
+          # Le anteponemos la URL de AWS obtenida del paso anterior
+          docker build -t ${{ steps.login-ecr.outputs.registry }}/${{ secrets.ECR_REPO_FRONTEND }}:latest .
+
       - name: Push Docker image
         run: |
-          docker push ${{ secrets.ECR_REPO_FRONTEND }}:latest
-
-      - name: Update Kubeconfig and Deploy to EKS
-        run: |
-          aws eks update-kubeconfig --region us-east-1 --name eks-proyect-innovatech
-          kubectl apply -f k8s/
+          # Subimos la imagen apuntando correctamente a AWS
+          docker push ${{ steps.login-ecr.outputs.registry }}/${{ secrets.ECR_REPO_FRONTEND }}:latest
