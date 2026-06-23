@@ -1,7 +1,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: frontend  # 👈 Nos quedamos con este único nombre oficial
+  name: frontend
   namespace: default
 spec:
   replicas: 1
@@ -13,18 +13,17 @@ spec:
       labels:
         app: frontend
     spec:
-        containers:
+      containers:
       - name: frontend
         image: 921558516087.dkr.ecr.us-east-1.amazonaws.com/frontend:latest
         ports:
         - containerPort: 80
         imagePullPolicy: Always
-        # 🔥 Agregamos esto para conectar con el backend
         env:
-        - name: VITE_API_DESPACHOS_URL
-          value: "http://backend-despachos-service.default.svc.cluster.local:8081"
-        - name: VITE_API_VENTAS_URL
-          value: "http://backend-ventas-service.default.svc.cluster.local:8080"
+          - name: VITE_API_DESPACHOS_URL
+            value: "http://backend-despachos-service.default.svc.cluster.local:8081"
+          - name: VITE_API_VENTAS_URL
+            value: "http://backend-ventas-service.default.svc.cluster.local:8080"
 ---
 apiVersion: v1
 kind: Service
