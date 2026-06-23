@@ -40,12 +40,7 @@ jobs:
 
       - name: Deploy to EKS
         run: |
-          # 1. Elimina el despliegue anterior que está congelado en la consola
-          kubectl delete deployment frontend-app --ignore-not-found=true
-          kubectl delete deployment frontend --ignore-not-found=true
-
-          # 2. Aplica la nueva configuración limpia
           kubectl apply -f k8s/deployment.yml
           
-          # 3. Fuerza el inicio inmediato del nuevo contenedor
-          kubectl rollout restart deployment/frontend-nuevo
+          # 🔥 Agrega esta línea para auditar el balanceador en los logs de GitHub
+          kubectl describe service frontend-service
