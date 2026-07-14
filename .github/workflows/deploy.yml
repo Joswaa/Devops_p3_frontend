@@ -1,14 +1,12 @@
 name: Frontend Deploy
-
 on:
   push:
     branches:
-      - deploy
+      - deploy 
 
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
@@ -26,23 +24,25 @@ jobs:
         uses: aws-actions/amazon-ecr-login@v2
 
       - name: Build Docker image
+        env:
+          IMAGE_TAG: deploy-${{ github.sha }}
         run: |
-          docker build -t ${{ steps.login-ecr.outputs.registry }}/${{ secrets.ECR_REPO_FRONTEND }}:latest .
+          docker build -t ${{ steps.login-ecr.outputs.registry }}/${{ secrets.ECR_REPO_FRONTEND }}:$IMAGE_TAG .
 
       - name: Push Docker image
+        env:
+          IMAGE_TAG: deploy-${{ github.sha }}
         run: |
-          docker push ${{ steps.login-ecr.outputs.registry }}/${{ secrets.ECR_REPO_FRONTEND }}:latest
+          docker push ${{ steps.login-ecr.outputs.registry }}/${{ secrets.ECR_REPO_FRONTEND }}:$IMAGE_TAG
 
-      - name: Update Kubeconfig and Deploy to EKS
+      - name: Update Kubeconfig
         run: |
-          aws eks update-kubeconfig --region us-east-1 --name eks-proyect-innovatech
-          
-          # 💥 1. BORRAR DE RAÍZ los 3 deployments que se crearon por error
-          kubectl delete deployment frontend-app --ignore-not-found=true
-          kubectl delete deployment frontend-nuevo --ignore-not-found=true
-          kubectl delete deployment frontend --ignore-not-found=true
-          kubectl describe service frontend-service
-          # 🚀 2. APLICAR EL DESPLIEGUE LIMPIO
+          aws eks update-kubeconfig --region ${{ secrets.AWS_REGION }} --name eks-proyect-innovatech
+
+      - name: Deploy to EKS
+        env:
+          IMAGE_TAG: deploy-${{ github.sha }}
+        run: |
           kubectl apply -f k8s/deployment.yml
-
-
+          kubectl set image deployment/frontend frontend=${{ steps.login-ecr.outputs.registry }}/${{ secrets.ECR_REPO_FRONTEND }}:$IMAGE_TAG
+          kubectl rollout status deployment/frontend
