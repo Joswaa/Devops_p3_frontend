@@ -2,7 +2,7 @@ name: Frontend Deploy
 on:
   push:
     branches:
-      - deploy 
+      - deploy
 
 jobs:
   build-and-deploy:
@@ -23,11 +23,14 @@ jobs:
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v2
 
-      - name: Build Docker image
+      - name: Build Docker image        
         env:
           IMAGE_TAG: deploy-${{ github.sha }}
         run: |
-          docker build -t ${{ steps.login-ecr.outputs.registry }}/${{ secrets.ECR_REPO_FRONTEND }}:$IMAGE_TAG .
+          docker build \
+            --build-arg VITE_API_DESPACHOS_URL=http://backend-despachos-service.default.svc.cluster.local:8081 \
+            --build-arg VITE_API_VENTAS_URL=http://backend-ventas-service.default.svc.cluster.local:8080 \
+            -t ${{ steps.login-ecr.outputs.registry }}/${{ secrets.ECR_REPO_FRONTEND }}:$IMAGE_TAG .
 
       - name: Push Docker image
         env:
